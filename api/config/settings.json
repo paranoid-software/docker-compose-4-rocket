@@ -1,0 +1,47 @@
+{
+  "application": {
+    "id": "rocket-api",
+    "name": "Rocket API",
+    "description": "Database as a service, restful API",
+    "tags": [
+      "python",
+      "gke",
+      "tools"
+    ],
+    "httpHealthCheck": {
+      "portNumber": 8000,
+      "url": "/health-check"
+    }
+  },
+  "securityServiceContext": {
+    "id": "jwt",
+    "audience": "https://rocket-api.paranoid.software",
+    "masterAccountCookieFilePath": "/etc/rocket/auth/master-account.cookie",
+    "signingKeyPairFilePath": "/etc/rocket/auth/signing-keypair.json",
+    "verificationKeyPairFilePath": "/etc/rocket/auth/verification-keypair.json"
+  },
+  "masterDbContext": {
+    "id": "biscuit",
+    "hostName": "biscuit",
+    "portNumber": 27017,
+    "username": "root",
+    "password": "pwd",
+    "defaultDbName": "_rocket",
+    "encryptionCookieFilePath": "/etc/rocket/secrets/cookie.monsta"
+  },
+  "searchCacheDbContext": {
+    "id": "kit-kat",
+    "hostName": "kit-kat",
+    "portNumber": 9200
+  },
+  "loggingServiceContext": {
+    "id": "logy",
+    "host": "logy",
+    "portNumber": 8080
+  },
+  "zooServiceContext": {
+    "id": "zookeeper",
+    "hostName": "zookeeper",
+    "portNumber": 8080
+  }
+}
