@@ -1,0 +1,71 @@
+{
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Trace",
+      "System": "Information",
+      "Microsoft": "None"
+    }
+  },
+  "application": {
+    "id": "rocket-bridge",
+    "name": "Rocket Bridge",
+    "description": "Rocket server events listener",
+    "tags": [
+      "csharp",
+      "gke",
+      "tools"
+    ],
+    "httpHealthCheck": {
+      "portNumber": 8080,
+      "url": "/health-check"
+    },
+    "messagesExchange": "db-events",
+    "messagesRoutingKeyPrefix": "",
+    "ipRequestsRateLimiting": {
+      "EnableEndpointRateLimiting": true,
+      "StackBlockedRequests": false,
+      "HttpStatusCode": 429,
+      "EndpointWhitelist": [
+        "*:/docs"
+      ],
+      "QuotaExceededResponse": {
+        "Content": "{{ \"message\": \"Whoa! Calm down, cowboy!\", \"details\": \"Quota exceeded. Maximum allowed: {0} per {1}. Please try again in {2} second(s).\" }}",
+        "ContentType": "application/json",
+        "StatusCode": 429
+      },
+      "GeneralRules": [
+        {
+          "Endpoint": "*",
+          "Period": "1s",
+          "Limit": 10
+        }
+      ]
+    }
+  },
+  "masterDbContext": {
+    "id": "biscuit",
+    "hostName": "biscuit",
+    "portNumber": 27017,
+    "username": "root",
+    "password": "pwd"
+  },
+  "messageBrokerServiceContext": {
+    "id": "the-rabbit",
+    "hostName": "the-rabbit",
+    "portNumber": 5672,
+    "virtualHost": "",
+    "userName": "guest",
+    "password": "guest"
+  },
+  "loggingServiceContext": {
+    "id": "logy",
+    "hostName": "logy",
+    "portNumber": 8080
+  },
+  "zooServiceContext": {
+    "id": "zookeeper",
+    "hostName": "logy",
+    "portNumber": 8080
+  }
+}

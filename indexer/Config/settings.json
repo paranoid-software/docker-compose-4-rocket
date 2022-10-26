@@ -1,0 +1,99 @@
+{
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Trace",
+      "System": "Information",
+      "Microsoft": "Information"
+    }
+  },
+  "application": {
+    "id": "rocket-indexer",
+    "name": "Rocket Indexer",
+    "description": "Rocket documents indexer",
+    "tags": [
+      "rocket",
+      "csharp",
+      "gke",
+      "tools"
+    ],
+    "httpHealthCheck": {
+      "portNumber": 8080,
+      "url": "/health-check"
+    },
+    "ipRequestsRateLimiting": {
+      "EnableEndpointRateLimiting": true,
+      "StackBlockedRequests": false,
+      "HttpStatusCode": 429,
+      "EndpointWhitelist": [
+        "*:/docs"
+      ],
+      "QuotaExceededResponse": {
+        "Content": "{{ \"message\": \"Whoa! Calm down, cowboy!\", \"details\": \"Quota exceeded. Maximum allowed: {0} per {1}. Please try again in {2} second(s).\" }}",
+        "ContentType": "application/json",
+        "StatusCode": 429
+      },
+      "GeneralRules": [
+        {
+          "Endpoint": "*",
+          "Period": "1s",
+          "Limit": 10
+        }
+      ]
+    }
+  },
+  "indexerStreamSettings": {
+    "exchangeName": "db-events", 
+    "queueName": "db-events.indexer",
+    "routingKeys": [
+      "*.*.Insert",
+      "*.*.Update",
+      "*.*.Replace",
+      "*.*.Delete"
+    ],
+    "autoDeleteQueue": false,
+    "isDurable": true,
+    "autoAck": true,
+    "arguments": {
+      "x-queue-mode": "lazy"
+    }
+  },
+  "mapperStreamSettings": {
+    "exchangeName": "db-events",
+    "queueName": "db-events.mapper",
+    "routingKeys": [
+      "*._objects.Insert",
+      "*._objects.Update",
+      "*._objects.Replace"
+    ],
+    "autoDeleteQueue": false,
+    "isDurable": true,
+    "autoAck": true,
+    "arguments": {
+      "x-queue-mode": "lazy"
+    }
+  },
+  "searchCacheDbContext": {
+    "id": "kit-kat",
+    "hostName": "kit-kat",
+    "portNumber": 9200
+  },
+  "messageBrokerServiceContext": {
+    "id": "the-rabbit",
+    "hostName": "the-rabbit",
+    "portNumber": 5672,
+    "virtualHost": "",
+    "userName": "guest",
+    "password": "guest"
+  },
+  "loggingServiceContext": {
+    "id": "logy",
+    "hostName": "logy",
+    "portNumber": 8080
+  },
+  "zooServiceContext": {
+    "id": "zookeeper",
+    "hostName": "zookeeper",
+    "portNumber": 8080
+  }
+}

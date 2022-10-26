@@ -1,0 +1,93 @@
+version: '3.7'
+services:
+
+  api:
+    container_name: api
+    restart: always
+    image: ${ROCKET_API_DOCKER_IMAGE}
+    environment:
+      - ACCESS_TOKEN_TTL_IN_MINUTES=720
+      - COOKIE_MONSTA_FILEPATH=/etc/rocket/secrets/cookie.monsta
+      - CONFIG_FILEPATH=/etc/rocket/config/settings.json
+    ports:
+      - 9000:8000
+    volumes:
+      - rocket-api:/etc/rocket
+
+  bridge:
+    container_name: bridge
+    restart: always
+    image: ${ROCKET_BRIDGE_DOCKER_IMAGE}
+    environment:
+      COOKIE_MONSTA_FILEPATH: "/etc/rocket-bridge/secrets/cookie.monsta"
+      CONFIG_FILEPATH: "/etc/rocket-bridge/Config/settings.json"
+    volumes:
+      - rocket-bridge:/etc/rocket-bridge
+    ports:
+        - 9004:8080
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+  indexer:
+    container_name: indexer
+    restart: always
+    image: ${ROCKET_INDEXER_DOCKER_IMAGE}
+    environment:
+      CONFIG_FILEPATH: "/etc/rocket-indexer/Config/settings.json"
+    volumes:
+      - rocket-indexer:/etc/rocket-indexer
+    ports:
+        - 9006:8080
+    depends_on:
+      - rabbitmq
+
+  mongodb:
+    container_name: biscuit
+    restart: always
+    image: mongo:4.2.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pwd
+    healthcheck:
+      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u root -p pwd --quiet) -eq 1
+      interval: 10s
+      start_period: 30s
+    command: ["--replSet", "dbrs", "--bind_ip_all"]
+    ports:
+      - 9001:27017
+
+  elasticsearch:
+    container_name: kit-kat
+    restart: always
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.1
+    environment:
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - 9002:9200
+      - 9003:9300
+
+  rabbitmq:
+    container_name: the-rabbit
+    restart: always
+    image: rabbitmq:3.8.6-management-alpine
+    ports:
+        - 9005:15672
+        - 9007:5672
+
+volumes:
+  rocket-api:
+    external: true
+  rocket-bridge:
+    external: true
+  rocket-indexer:
+    external: true

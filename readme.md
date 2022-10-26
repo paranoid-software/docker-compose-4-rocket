@@ -1,3 +1,2 @@
-# Deploying rocket on docker using docker-compose
-
+# Rocket deployment using docker compose
 
