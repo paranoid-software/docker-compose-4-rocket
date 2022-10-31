@@ -27,7 +27,8 @@ It is important that you review the following requirements:
 
 Linux / Mac
 ```bash
-cat <KEY-FILE.json> | docker login -u _json_key --password-stdin https://<HOSTNAME>
+cat <KEY-FILE.json> |
+docker login -u _json_key --password-stdin https://<HOSTNAME>
 ```
 
 Windows
@@ -105,7 +106,7 @@ The result to this command will be something like:
 
 Every token is signed and verified using the keypairs located at **api/auth** under the name **signing-keypair.json** and **verification-keypair.json**. You can always change this keypairs, but remember to update both of them so the verification can be done.
 
-### Using your new token to create and application and your first object
+### Using your new token to create an application and your first object
 
 With this master token you have the required scopes to manage all accounts, applications and objects. In order to create an application and one object on that application you just have to issue the following commands:
 
