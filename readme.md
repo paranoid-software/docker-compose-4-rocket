@@ -2,7 +2,7 @@
 
 Rocket is distributed under a propietary license in the form of docker images that can be pulled form a private repository located on Google Cloud Platform.
 
-In order to be able to deploy its components you must get a service account key file from Paranoid Software at https://paranoid.software/rocket with read access permissions over your purchased version(s).
+In order to be able to deploy its components you must get a service account key file from Paranoid Software at https://paranoid.software with read access permissions over your purchased version(s).
 
 ## Before we start
 
@@ -101,4 +101,13 @@ The result to this command will be something like:
 }
 ```
 
+### Tokens signing and verification
+
+Every token is signed and verified using the keypairs located at **api/auth** under the name **signing-keypair.json** and **verification-keypair.json**. You can always change this keypairs, but remember to update both of them so the verification can be done.
+
+### Using your new token to create and application and your first object
+
+## Rocket field level encryption support
+
+## Settings files im a nutshell
 
