@@ -1,30 +1,70 @@
 # Rocket deployment using docker compose
 
-## Antes de empezar
+Rocket is distributed under a propietary license in the form of docker images that can be pulled form a private repository located on Google Cloud Platform.
 
-1. Instalar Docker
-2. Instalar GIT
+In order to be able to deploy its components you must get a service account key file from Paranoid Software at https://paranoid.software/rocket with read access permissions over your purchased version(s).
 
-## Paso a paso
+## Before we start
 
-1. Clonar repositorio https://github.com/paranoid-software/docker-compose-4-rocket
-2. Solicitar llave para cuenta de servicio con acceso al repositorio
-3. Iniciar sesión en docker con la llave obtenida
+It is important that you review the following requirements:
 
-Windows
+- GIT to clone this repo (optional; you can also just download it)
+- Docker and Docker Compose
+- A valid service account to access the private repository(s)
+- Identify the images and tags (allowed versions) for:
+  - Rocket API
+  - Rocket Bridge
+  - Rocket Indexer
+- A running MongoDB instance (optional*)
+- A running Elasticsearch instance (optional*)
+- A running RabbitMQ instance (optional*)
 
-```bash
-Get-Content KEY-FILE |
-docker login -u _json_key --password-stdin https://HOSTNAME
-```
+> (*) This guide includes a docker-compose.yaml file with services for MongoDB, Elasticsearch and RabbitMQ
+
+## Step by step deployment
+
+1. Loging to the private repository by issuing the following command:
 
 Linux / Mac
 ```bash
-cat KEY-FILE | docker login -u _json_key --password-stdin \
-https://HOSTNAME
+cat <KEY-FILE.json> | docker login -u _json_key --password-stdin https://<HOSTNAME>
 ```
 
-4. Crear archivo con variables de entorno (.env) para especificar el repositorio y las imagenes correspondientes
-5. Ejecutar comando PULL para las imagenes (Recomendado antes de ejecutar docker-compose)
-6. Ejecutar script para crear volumenes (create-volumes.sh), en el caso de windows ejecutar la creación de cada volumen por separado utilizando GIT Bash
-7. Ejecutar comando docker-compose up -d
+Windows
+
+```powershell
+Get-Content <KEY-FILE.json> |
+docker login -u _json_key --password-stdin https://<HOSTNAME>
+```
+
+2. Clone or download this repo
+3. Request images names and tags available for your service account
+4. Modify .env file to specify image name and tags to deploy
+
+.env file sample
+
+```
+ROCKET_API_DOCKER_IMAGE=https://private.registry.com/rocket-api:latest
+ROCKET_BRIDGE_DOCKER_IMAGE=https://private.registry.com/rocket-bridge:latest
+ROCKET_INDEXER_DOCKER_IMAGE=https://private.registry.com/rocket-indexer:latest
+```
+
+5. Review and modify settings file if necessary. This files are located at its corresponding folders:
+
+  - api (API settings and secrets)
+  - bridge (Bridge settings and secrets)
+  - indexer (indexer settings)
+
+6. Execute the create-volumes.sh script file (From a linux capable terminal preferably). This script will create one volume for every component and will pre-populate them with its settings and secrets files accordingly.
+
+7. Verify the volumes creation under the names:
+
+  - rocket-api
+  - rocket-bridge
+  - rocket-indexer
+
+8. Execute the deployment by running the following command:
+
+```bash
+docker-compose up -d
+```
