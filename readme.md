@@ -94,7 +94,7 @@ The result to this command will be something like:
 
 ```json
 {
-	"access_token": "eyJhbGciOiJSUzI1NiIsImlzcyI6InNlbGYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJzZWxmIiwic3ViIjoibWFzdGVyLWFjY291bnQiLCJhdWQiOiJodHRwczovL3JvY2tldC1hcGkucGFyYW5vaWQuc29mdHdhcmUiLCJpYXQiOjE2NjcyNTI3NzgsImV4cCI6MTY2NzI5NTk3OCwic2NvcGUiOiJyZWFkOmFjY291bnRzIGNyZWF0ZTphY2NvdW50cyBtb2RpZnk6YWNjb3VudHMtc2NvcGUgbW9kaWZ5OmFjY291bnRzLWFwcGxpY2F0aW9ucy1zY29wZSBkZWxldGU6YWNjb3VudHMgcmVhZDphcHBsaWNhdGlvbnMgY3JlYXRlOmFwcGxpY2F0aW9ucyBtb2RpZnk6YXBwbGljYXRpb25zIGRlbGV0ZTphcHBsaWNhdGlvbnMgcmVhZDpvYmplY3RzLW1ldGEgbW9kaWZ5Om9iamVjdHMtbWV0YSByZWFkOm9iamVjdHMgY3JlYXRlOm9iamVjdHMgbW9kaWZ5Om9iamVjdHMgZGVsZXRlOm9iamVjdHMifQ.KlEPhlQiGxuJTcCuTpt5ddRmF8jqeJ3kS4QRIyYJTWfp4QlBqfaoVnvQhbhLg7yj5Kl2XVkxvUZAiFtf2EUMWRjKeAuSxRh_9mRTLtWI8eGUhhBfXoR-5_gbotGk_XB7xXlY1Qds4UBlkZDk-LV2BTKba3UbyINeS5MO1rIytgDWQiGwzieZuhXQUlKUW82PLkmr4c01ZGyxhB0YMGp9LcSU8L3B6VGJesfIDd2JhXoNW6dtYD7i-DNvnEnsTV9yfS3wigLj5ZaA_pidgQlTmPK7XNdlUd96V4mK_LkfdQ1S5KfXELDrWii8oGEWhmKJNYmkaeHCTTchNyS_wxpgmQ",
+	"access_token": "<access_token>",
 	"expires_in": 43200,
 	"scope": "read:accounts create:accounts modify:accounts-scope modify:accounts-applications-scope delete:accounts read:applications create:applications modify:applications delete:applications read:objects-meta modify:objects-meta read:objects create:objects modify:objects delete:objects",
 	"token_type": "Bearer"
@@ -107,7 +107,78 @@ Every token is signed and verified using the keypairs located at **api/auth** un
 
 ### Using your new token to create and application and your first object
 
+With this master token you have the required scopes to manage all accounts, applications and objects. In order to create an application and one object on that application you just have to issue the following commands:
+
+Creating hello_rocket application
+
+```bash
+curl --location --request POST 'http://localhost:9000/hello_rocket' \
+--header 'Authorization: Bearer <access_token>' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Hello Rocket",
+    "description": "My first rocket application"
+}'
+```
+
+Creating todo_list object
+
+```bash
+curl --location --request POST 'http://localhost:9000/hello_rocket/todo_list' \
+--header 'Authorization: Bearer <access_token>' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Document docker-compose 4 rocket repo",
+    "taskType": "Documentation",
+    "effort": 5
+}'
+```
+
+Response
+
+```bash
+{"_id":"63604740cfc645c87a41d9c2"}
+```
+
+Querying all todo_list objects
+
+```bash
+curl --location --request GET 'http://localhost:9000/hello_rocket/todo_list' \
+--header 'Authorization: Bearer <access_token>'
+```
+
+Response
+
+```json
+{
+	"items": [{
+		"_id": "63604740cfc645c87a41d9c2",
+		"effort": 5,
+		"name": "Document docker-compose 4 rocket repo",
+		"rocket_meta": {
+			"created_by": "master-account"
+		},
+		"taskType": "Documentation"
+	}],
+	"total": 1
+}
+```
+
+Cleanning up
+
+```bash
+curl --location --request DELETE 'http://localhost:9000/hello_rocket' \
+--header 'Authorization: Bearer <access_token>'
+```
+
 ## Rocket field level encryption support
 
-## Settings files im a nutshell
+To be able to encrypt/decrypt stored data MongoDB needs a local master key that we call **cookie.monsta** which is located at **api/secrets** and **bridge/secrets** folder. This is a ramdom string stored in binary format.
 
+## Settings files in a nutshell
+
+### API Settings
+
+### Bridge Settings
+
+### Indexer Settings
