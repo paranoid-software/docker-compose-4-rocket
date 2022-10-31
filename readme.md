@@ -68,3 +68,37 @@ ROCKET_INDEXER_DOCKER_IMAGE=https://private.registry.com/rocket-indexer:latest
 ```bash
 docker-compose up -d
 ```
+
+## Rocket master account
+
+Rocket is a data service protected using JTW and in order to be able to create your access tokens you will need at least one master account secret.
+
+That secret is located at **api/auth** folder under the name **master-account.cookie**, it can be any string but we recommend to be a complex and long string like this one:
+
+```
+WR%{7M-G-M[e(VwEAqFfXY4#+pV]2C%;#}=3?Ce?qi({RL;c5[Bu{aJ]27}pG3fe
+```
+
+When the deployment is finished you will be able to create your first token by issuing the following command:
+
+```bash
+curl --location --request POST 'http://localhost:9000/accounts/token' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+      "secret": "WR%{7M-G-M[e(VwEAqFfXY4#+pV]2C%;#}=3?Ce?qi({RL;c5[Bu{aJ]27}pG3fe",
+      "grantType": "master"
+    }'
+```
+
+The result to this command will be something like:
+
+```json
+{
+	"access_token": "eyJhbGciOiJSUzI1NiIsImlzcyI6InNlbGYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJzZWxmIiwic3ViIjoibWFzdGVyLWFjY291bnQiLCJhdWQiOiJodHRwczovL3JvY2tldC1hcGkucGFyYW5vaWQuc29mdHdhcmUiLCJpYXQiOjE2NjcyNTI3NzgsImV4cCI6MTY2NzI5NTk3OCwic2NvcGUiOiJyZWFkOmFjY291bnRzIGNyZWF0ZTphY2NvdW50cyBtb2RpZnk6YWNjb3VudHMtc2NvcGUgbW9kaWZ5OmFjY291bnRzLWFwcGxpY2F0aW9ucy1zY29wZSBkZWxldGU6YWNjb3VudHMgcmVhZDphcHBsaWNhdGlvbnMgY3JlYXRlOmFwcGxpY2F0aW9ucyBtb2RpZnk6YXBwbGljYXRpb25zIGRlbGV0ZTphcHBsaWNhdGlvbnMgcmVhZDpvYmplY3RzLW1ldGEgbW9kaWZ5Om9iamVjdHMtbWV0YSByZWFkOm9iamVjdHMgY3JlYXRlOm9iamVjdHMgbW9kaWZ5Om9iamVjdHMgZGVsZXRlOm9iamVjdHMifQ.KlEPhlQiGxuJTcCuTpt5ddRmF8jqeJ3kS4QRIyYJTWfp4QlBqfaoVnvQhbhLg7yj5Kl2XVkxvUZAiFtf2EUMWRjKeAuSxRh_9mRTLtWI8eGUhhBfXoR-5_gbotGk_XB7xXlY1Qds4UBlkZDk-LV2BTKba3UbyINeS5MO1rIytgDWQiGwzieZuhXQUlKUW82PLkmr4c01ZGyxhB0YMGp9LcSU8L3B6VGJesfIDd2JhXoNW6dtYD7i-DNvnEnsTV9yfS3wigLj5ZaA_pidgQlTmPK7XNdlUd96V4mK_LkfdQ1S5KfXELDrWii8oGEWhmKJNYmkaeHCTTchNyS_wxpgmQ",
+	"expires_in": 43200,
+	"scope": "read:accounts create:accounts modify:accounts-scope modify:accounts-applications-scope delete:accounts read:applications create:applications modify:applications delete:applications read:objects-meta modify:objects-meta read:objects create:objects modify:objects delete:objects",
+	"token_type": "Bearer"
+}
+```
+
+
