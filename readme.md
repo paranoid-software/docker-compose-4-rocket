@@ -175,10 +175,28 @@ curl --location --request DELETE 'http://localhost:9000/hello_rocket' \
 
 To be able to encrypt/decrypt stored data MongoDB needs a local master key that we call **cookie.monsta** which is located at **api/secrets** and **bridge/secrets** folder. This is a ramdom string stored in binary format.
 
+## RabbitMQ, MongoDB and Elasticsearch
+
+Rocket depends on this 3 components to work, that is why the docker-compose.yaml includes a service for each of this components, but as you can imagine it is not mandatory that you deploy this services; you can already have one instance of every one of them or any of them. 
+
+In that case you just need to review the settings file to modify the corresponding connection parameters to your already deployed instances and finally modify your docker-compose.yaml file so the optional services to be removed before going up.
+
 ## Settings files in a nutshell
 
 ### API Settings
 
+The API relies on a settings file with the structure and information like the one located at **api/config/settings.json**
+
+Very important values in this file are those ones related to the connection parameters to MongoDb and Elasticsearch instances. They are for default configured to the services deployed by this docker compose but they can be changed to any instance you already have.
+
 ### Bridge Settings
 
+The Bridge relies on a settings file with the structure and information like the one located at **bridge/Config/settings.json**
+
+Very important values in this file are those ones related to the connections parameters to MongoDb and RabbitMQ instances. They are for default configured to the services deployed by this docker compose but they can be changed to any instance you already have.
+
 ### Indexer Settings
+
+The Bridge relies on a settings file with the structure and information like the one located at **indexer/Config/settings.json**
+
+Very important values in this file are those ones related to the connections parameters to Elasticsearch and RabbitMQ instances. They are for default configured to the services deployed by this docker compose but they can be changed to any instance you already have.
